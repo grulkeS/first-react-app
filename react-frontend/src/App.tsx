@@ -4,6 +4,7 @@ import SimpleAsset from './components/SimpleAsset';
 import ShowSum from './components/ShowSum';
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { AssertionError } from 'assert';
 
 interface IProps { }
 
@@ -26,6 +27,7 @@ export default class App extends React.PureComponent<IProps, IState> {
 
     this.handleCreateAsset = this.handleCreateAsset.bind(this);
     this.handleDeleteAsset = this.handleDeleteAsset.bind(this);
+    this.hasChanged = this.hasChanged.bind(this);
 
 
     this.state = {
@@ -77,11 +79,11 @@ export default class App extends React.PureComponent<IProps, IState> {
           <tbody>
             <tr><th>description</th><th>value</th><th>action</th></tr>
             {/*if the JavaScript code returns an array of React components, then the generated code will loop through the array and render all components in the array*/}
-            {this.state.assets.map((asset:IAsset) => {
-              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={false} asset={asset} />
+            {this.state.assets.map((asset: IAsset) => {
+              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={false} asset={asset} hasChanged={this.hasChanged} />
             })}
 
-            
+
 
             <ShowSum count={this.state.currentCount} assets={this.state.assets} />
 
@@ -105,7 +107,7 @@ export default class App extends React.PureComponent<IProps, IState> {
     const newAsset: IAsset = {
       _id: mongoose.Types.ObjectId().toString(),
       asset_name: "",
-      asset_value: 0
+      asset_value: 5
     }
 
     //now we have to add the new asset to the mongodb database
@@ -118,7 +120,7 @@ export default class App extends React.PureComponent<IProps, IState> {
 
     //now we can add the new asset to the new array
     newAssets.push(newAsset);
-//<SimpleAsset key={newAsset._id} onDelete={this.handleDeleteAsset} edit={true} asset={newAsset} />
+    //<SimpleAsset key={newAsset._id} onDelete={this.handleDeleteAsset} edit={true} asset={newAsset} />
     //we cannot just change the state, in order for react to know that we changed state and want rerendering, we need to call
     //the ".setState()" method. The method takes all properties of the state we want to change as arguments.
     this.setState(
@@ -131,10 +133,28 @@ export default class App extends React.PureComponent<IProps, IState> {
 
   }
 
+  hasChanged() {
+    console.log("hasChanged junge")
+      let newAssestsHelper: IAsset[] = this.state.assets.slice();
+      this.setState(
+        {
+          assets: []
+        }
+      );
+      console.log(this.state)
+      this.setState(
+        {
+          assets: newAssestsHelper,
+          currentCount: newAssestsHelper.length
+        }
+      );
+     
+    
 
+  }
   //the next method is called when the "sell or dispose" button of any of the "SimpleAsset" components is clicked
 
-  handleDeleteAsset(event:any) {
+  handleDeleteAsset(event: any) {
     const IdOfAssetToDelete: string = event.target.id;
     console.log("Delete asset with _id:" + IdOfAssetToDelete);
 
@@ -158,7 +178,7 @@ export default class App extends React.PureComponent<IProps, IState> {
 
   //the next method is just a helper to save a new asset in the database
 
-  saveAssetToDatabase(asset:IAsset) {
+  saveAssetToDatabase(asset: IAsset) {
     axios.post('http://localhost:8080/assets/add', asset)
       .then(res => console.log(res.data));
   }

@@ -11,7 +11,7 @@ export default class ShowSum extends React.PureComponent<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
-
+        this.sum=this.sum.bind(this);
         console.log(this.props, "showsum in constructor");
     }
 
@@ -23,16 +23,18 @@ export default class ShowSum extends React.PureComponent<IProps, IState> {
         //});
     }
     sum() {
+        let initialVal: number = 0;
+        return this.props.assets.reduce((acc, currentVal) => {
+            return acc + currentVal.asset_value;
+        }, initialVal)
 
     }
     render() {
-        let initialVal: number = 0;
+        
         return (
             <tr className="sumline">
                 <td>total: {this.props.count}</td>
-                <td>sum: {this.props.assets.reduce((acc, currentVal) => {
-                    return acc + currentVal.asset_value;
-                }, initialVal)}</td>
+                <td>sum: {this.sum()}</td>
                 <td></td>
             </tr>
         )
