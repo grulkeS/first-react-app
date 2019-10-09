@@ -58,7 +58,7 @@ export default class App extends React.PureComponent<IProps, IState> {
       }
 
       this.setState({
-        assets: response.data as IAsset[],
+        assets: response.data,
         currentCount: response.data.length
       });
     }).catch(function (error) { console.log(error); })
@@ -78,7 +78,7 @@ export default class App extends React.PureComponent<IProps, IState> {
             <tr><th>description</th><th>value</th><th>action</th></tr>
             {/*if the JavaScript code returns an array of React components, then the generated code will loop through the array and render all components in the array*/}
             {this.state.assets.map((asset:IAsset) => {
-              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={true} asset={asset} />
+              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={false} asset={asset} />
             })}
 
             
