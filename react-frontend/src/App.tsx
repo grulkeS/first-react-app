@@ -27,7 +27,7 @@ export default class App extends React.PureComponent<IProps, IState> {
 
     this.handleCreateAsset = this.handleCreateAsset.bind(this);
     this.handleDeleteAsset = this.handleDeleteAsset.bind(this);
-    this.hasChanged = this.hasChanged.bind(this);
+    this.refreshApp = this.refreshApp.bind(this);
 
 
     this.state = {
@@ -80,7 +80,7 @@ export default class App extends React.PureComponent<IProps, IState> {
             <tr><th>description</th><th>value</th><th>action</th></tr>
             {/*if the JavaScript code returns an array of React components, then the generated code will loop through the array and render all components in the array*/}
             {this.state.assets.map((asset: IAsset) => {
-              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={false} asset={asset} hasChanged={this.hasChanged} />
+              return <SimpleAsset key={asset._id} onDelete={this.handleDeleteAsset} edit={false} asset={asset}  refresh={this.refreshApp} />
             })}
 
 
@@ -133,25 +133,18 @@ export default class App extends React.PureComponent<IProps, IState> {
 
   }
 
-  hasChanged() {
-    console.log("hasChanged junge")
-      let newAssestsHelper: IAsset[] = this.state.assets.slice();
-      this.setState(
-        {
-          assets: []
-        }
-      );
-      console.log(this.state)
-      this.setState(
-        {
-          assets: newAssestsHelper,
-          currentCount: newAssestsHelper.length
-        }
-      );
-     
-    
+  refreshApp(asset:IAsset) {
 
-  }
+    let assetIndex = this.state.assets.findIndex(assetElem => assetElem._id === asset._id);
+  
+    let newAssets = this.state.assets.slice();
+  
+    newAssets[assetIndex] = asset;
+  
+      this.setState({
+        assets: newAssets
+      });
+    }
   //the next method is called when the "sell or dispose" button of any of the "SimpleAsset" components is clicked
 
   handleDeleteAsset(event: any) {

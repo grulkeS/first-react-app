@@ -7,7 +7,7 @@ interface IProps {
     onDelete: Function;
     edit: boolean;
     asset: IAsset;
-    hasChanged: Function;
+    refresh: Function;
 }
 
 interface IState{
@@ -25,6 +25,7 @@ export default class SimpleAsset extends React.PureComponent<IProps, IState> {
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        
 
         this.state = {
             delete_function: props.onDelete,
@@ -74,7 +75,7 @@ export default class SimpleAsset extends React.PureComponent<IProps, IState> {
             asset: {
                 _id: this.state.asset._id,
                 asset_name: this.state.asset.asset_name,
-                asset_value: event.target.value
+                asset_value: event.target.valueAsNumber
             }
         });
         
@@ -85,8 +86,8 @@ export default class SimpleAsset extends React.PureComponent<IProps, IState> {
 
         axios.post('http://localhost:8080/assets/update/' + IdOfAssetToDelete, this.state.asset)
             .then(res => console.log(res.data));
-            this.props.hasChanged();
         this.setState({ edit_mode: false });
+        this.props.refresh(this.state.asset)
     }
     handleEdit() {
         this.setState({ edit_mode: true });
